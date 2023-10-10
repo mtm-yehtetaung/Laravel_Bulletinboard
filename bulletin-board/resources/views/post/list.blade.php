@@ -53,7 +53,7 @@
                 <td>{{$post->description}}</td>
                 <td>{{$post->created_user}}</td>
                 <td>{{date('Y/m/d', strtotime($post->created_at))}}</td>
-                @if(auth()->user() && (auth()->user()->type == 0 || auth()->user()->type == 1))
+                @if(auth()->user() && (auth()->user()->type == 0 || auth()->user()->type == 1 && $post->created_user_id == auth()->user()->id))
                 <td>
                   <a type="button" class="btn btn-primary btn-md" href="/post/edit/{{$post->id}}">Edit</a>
                   <button type="button" class="btn btn-danger view-details" data-bs-toggle="modal" onclick="showDeleteDetail({{json_encode($post)}})" data-bs-target="#deleteModal">Delete</button>

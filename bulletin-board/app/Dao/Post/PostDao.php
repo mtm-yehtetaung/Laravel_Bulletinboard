@@ -22,13 +22,23 @@ class PostDao implements PostDaoInterface
 
     public function getAllPosts()
     {
-        $postList = DB::table('posts as post')
+        $posts = DB::table('posts as post')
         ->join('users as created_user', 'post.created_user_id', '=', 'created_user.id')
         ->join('users as updated_user', 'post.updated_user_id', '=', 'updated_user.id')
         ->select('post.*', 'created_user.name as created_user', 'updated_user.name as updated_user')
-        ->whereNull('post.deleted_at')
+        ->where(function ($query) {
+            if (Auth::guest()) {
+                $query->whereNull('post.deleted_at')->where('post.status', 1);
+            } elseif (Auth::user()->type == '1') {
+                $id = Auth::user()->id;
+                $query->whereNull('post.deleted_at')
+                    ->where(function ($query) use ($id) {
+                        $query->where('post.created_user_id', $id)->orWhere('post.status', 1);
+                    });
+            }
+        })
         ->paginate(5);
-      return $postList;
+      return $posts;
     }
 
     public function getPostById($id){

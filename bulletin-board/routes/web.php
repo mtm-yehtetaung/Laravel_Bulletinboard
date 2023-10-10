@@ -19,11 +19,8 @@ use App\Http\Controllers\User\UserController;
 */
 
 Route::get('/', function () {
-    if(Auth::check()){
-        return redirect()->route('postlist');;
-    }else {
-        return view('auth.login');
-    }
+
+    return redirect()->route('postlist');
 });
 
 Auth::routes(['register' => false]);
@@ -33,10 +30,12 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 // ----------------------------auth ------------------------------//
 
 Route::controller(RegisterController::class)->group(function () {
+    Route::middleware(['admin'])->group(function () {
     Route::get('/user/register', 'showRegister')->name('register');
     Route::post('/user/register', 'submitRegister')->name('register');
     Route::get('/user/register/confirm', 'showRegisterConfirm')->name('registerconfirm');
     Route::post('/user/register/confirm', 'submitRegisterConfirm')->name('registerconfirm');
+});
 });
 
 Route::controller(LoginController::class)->group(function () {
@@ -45,22 +44,31 @@ Route::controller(LoginController::class)->group(function () {
 
 // ----------------------------users------------------------------//
 Route::controller(UserController::class)->group(function () {
-    Route::get('/user/list', 'index')->name('userlist');
-    Route::delete('/user/delete', 'deleteUser')->name('postdelete');
+    Route::middleware(['auth'])->group(function () {
     Route::get('/user/profile', 'showProfile')->name('userprofile');
     Route::get('/user/profile/edit', 'showProfileEdit')->name('userprofileedit');
     Route::post('/user/profile/edit', 'submitProfileEdit')->name('userprofileedit');
     Route::get('/user/profile/edit/confirm', 'showProfileEditConfirm')->name('profileeditconfirm');
     Route::post('/user/profile/edit/confirm', 'submitProfileEditConfirm')->name('profileeditconfirm');
-    Route::get('user/search','searchUser')->name('usersearch');
     Route::get('user/change-password','showChangePassword')->name('changepassword');
     Route::post('user/change-password','submitChangePassword')->name('changepassword');
+});
+
+    Route::middleware(['admin'])->group(function () {
+    Route::get('/user/list', 'index')->name('userlist');
+    Route::delete('/user/delete', 'deleteUser')->name('postdelete');
+    Route::get('user/search','searchUser')->name('usersearch');
+});
 });
 
 
 // ---------------------------- posts ------------------------------//
 Route::controller(PostController::class)->group(function () {
     Route::get('/post/list', 'index')->name('postlist');
+    Route::get('post/search','searchPost')->name('postsearch');
+    Route::get('post/download/','downloadPostCSV')->name('postdownload');
+
+    Route::middleware(['auth'])->group(function () {
     Route::get('/post/create', 'showPostCreate')->name('postcreate');
     Route::post('/post/create', 'submitPostCreate')->name('postcreate');
     Route::get('/post/create/confirm', 'showPostConfirm')->name('postconfirm');
@@ -70,10 +78,9 @@ Route::controller(PostController::class)->group(function () {
     Route::get('/post/edit/{id}/confirm', 'showPostEditConfirm')->name('posteditconfirm');
     Route::post('/post/edit/{id}/confirm', 'submitPostEditConfirm')->name('posteditconfirm');
     Route::delete('/post/delete', 'deletePost')->name('postdelete');
-    Route::get('post/search','searchPost')->name('postsearch');
-    Route::get('post/download/','downloadPostCSV')->name('postdownload');
     Route::get('post/upload/','showPostUpload')->name('postupload');
     Route::post('post/upload/','submitPostUpload')->name('postupload');
+});
 });
 
 // ---------------------------- posts ------------------------------//
