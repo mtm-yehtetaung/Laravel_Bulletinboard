@@ -13,6 +13,7 @@
     <script src="{{ asset('js/toastr_jquery.min.js') }}"></script>
     <script src="{{ asset('js/toastr.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/common.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -27,6 +28,7 @@
         <nav class="navbar navbar-expand-md navbar-dark bg-danger shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
+                <img src="{{ asset('images/logo-transparent.png') }}" alt="Logo" style="height: 75px; width: 100px;">
                     MTM bulletinboard
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -48,15 +50,12 @@
                                     <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                                 </li>
                             @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
                         @else
+                        <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Create User') }}</a>
+                                </li>
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle fw-bold fs-5" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
                                 </a>
 
@@ -71,7 +70,7 @@
                                         @csrf
                                     </form>
 
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="/user/profile">
                                         {{ __('Profile') }}
                                     </a>
                                 </div>

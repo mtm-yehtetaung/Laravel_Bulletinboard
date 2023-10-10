@@ -12,6 +12,10 @@ return [
     | based disks are available to your application. Just store away!
     |
     */
+    'public' => [
+        'driver' => 'local',
+        'root' => public_path(),
+    ],
 
     'default' => env('FILESYSTEM_DRIVER', 'local'),
 

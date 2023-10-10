@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Contracts\Services\User\UserServiceInterface;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterRequest;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class RegisterController extends Controller
 {
@@ -23,6 +28,7 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
+    private $userInterface;
 
     /**
      * Where to redirect users after registration.
@@ -36,9 +42,10 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(UserServiceInterface $userServiceInterface)
     {
-        $this->middleware('guest');
+        // $this->middleware('guest');
+        $this->userInterface = $userServiceInterface;
     }
 
     /**
@@ -69,5 +76,44 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    //show register form
+    public function showRegister() 
+    {
+    if (Storage::disk('public')->exists('images/' . session('uploadProfile'))) {
+            Storage::disk('public')->delete('images/' . session('uploadProfile'));
+    }
+        return view('auth.register');
+    }
+
+    //submit register form
+    public function submitRegister(RegisterRequest $request)
+    {
+        
+        $result = $request->validated();
+        $name = $request->file('profile')->getClientOriginalName();
+        $fileName =time(). Auth::user()->id . '.' . $request->file('profile')->getClientOriginalExtension();
+        $request->file('profile')->storeAs('public/images/',$fileName);
+        session(['ProfileName' => $name]);
+        session(['uploadProfile' => $fileName]);
+        return redirect()
+        ->route('registerconfirm')
+        ->withInput();
+    }
+
+    public function showRegisterConfirm()
+    {
+        if (old()) {
+            return view('auth.register-confirm');
+          }
+    }
+
+    public function submitRegisterConfirm(Request $request)
+    {
+        
+        $this->userInterface->saveUser($request);
+        return redirect()
+        ->route('userlist');
     }
 }
