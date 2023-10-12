@@ -36,6 +36,11 @@ function showUserDetail(user) {
         moment(user.updated_at).format("YYYY/MM/DD")
     );
     $("#user-detail #user-updated-user").text(user.updated_user);
-    $("#user-detail #user-profile").attr("src", `/storage/images/${user.profile}`);
+    let profile="default-profile.jpg";
+    if(user.profile)
+    {
+        profile = user.profile;
+    }
+    $("#user-detail #user-profile").attr("src", `/storage/images/${profile}`);
 }
 

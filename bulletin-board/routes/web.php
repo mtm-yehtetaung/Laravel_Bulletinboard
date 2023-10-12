@@ -30,6 +30,10 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 // ----------------------------auth ------------------------------//
 
 Route::controller(RegisterController::class)->group(function () {
+
+    Route::get('/user/signup', 'showSignup')->name('signup');
+    Route::post('/user/signup', 'submitSignup')->name('signup');
+
     Route::middleware(['admin'])->group(function () {
     Route::get('/user/register', 'showRegister')->name('register');
     Route::post('/user/register', 'submitRegister')->name('register');

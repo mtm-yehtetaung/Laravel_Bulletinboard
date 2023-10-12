@@ -11,7 +11,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class PostsExport implements FromCollection,WithHeadings,WithMapping,WithEvents
+class PostsExport implements FromCollection,WithHeadings,WithMapping
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -67,7 +67,7 @@ class PostsExport implements FromCollection,WithHeadings,WithMapping,WithEvents
             $post->id,
             $post->title, 
             $post->description, 
-            $post->status,
+            (string)$post->status,
             $post->created_user_id,
             $post->updated_user_id,
             $post->deleted_user_id,
@@ -77,14 +77,4 @@ class PostsExport implements FromCollection,WithHeadings,WithMapping,WithEvents
         ];
     }
 
-
-    public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class=> function(AfterSheet $event) {
-                $event->sheet->getDelegate()->getColumnDimension('I')->setWidth(90);
-               
-            },
-        ];
-    }
 }

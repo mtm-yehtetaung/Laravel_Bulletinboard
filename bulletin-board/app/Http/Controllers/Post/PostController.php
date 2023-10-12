@@ -7,9 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PostCreateRequest;
 use App\Http\Requests\PostEditRequest;
 use App\Contracts\Services\Post\PostServiceInterface;
-use App\Models\Post;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PostsExport;
 use App\Http\Requests\PostCsvRequest;
@@ -62,8 +59,16 @@ class PostController extends Controller
     //submit post confirm form
     public function submitPostConfirm(Request $request)
     {
-        $this->postInterface->savePost($request);
-        return redirect()->route('postlist');
+        try {
+            $this->postInterface->savePost($request);
+            Toastr::success('Post added successfully');
+            return redirect()->route('postlist');
+        }
+        catch (\Exception $e) {
+            Toastr::error('An error occurred while saving the post');
+            return redirect()->route('postlist');
+        }
+
     }
 
     //show post edit form
@@ -94,42 +99,56 @@ class PostController extends Controller
     //submit post edit confirm form
     public function submitPostEditConfirm(Request $request, $id) 
     {
-        $post = $this->postInterface->updatePostById($request, $id);
-        return redirect()->route('postlist');
+        try {
+            $post = $this->postInterface->updatePostById($request, $id);
+            Toastr::success('Post updated successfully');
+            return redirect()->route('postlist');
+        }
+        catch (\Exception $e) {
+            Toastr::error('An error occurred while updating the post');
+            return redirect()->route('postlist');
+        }
     }
-
-    // public function deletePost($id) {
-    //     $post = $this->postInterface->deletePostById($id);
-    //     return redirect()->route('postlist'); 
-    // }
-    
+   
     //delete post
     public function deletePost(Request $request) {
-        $post = Post::find($request['deleteId']);
-        if ($post) {
-          $post->deleted_user_id = Auth::user()->id;
-          $post->save();
-          $post->delete();
+        try
+        {
+            $this->postInterface->deletePost($request);
+            Toastr::success('post deleted successfully');
+            return redirect()->route('postlist'); 
         }
-        return redirect()->route('postlist'); 
+        catch (\Exception $e) {
+            Toastr::error('An error occurred while deleting the post');
+            return redirect()->route('postlist');
+        }
     }
     
     //search post
     public function searchPost(Request $request) {
         $postList = $this->postInterface->searchPost($request);
-        session(['filteredPostList' => $postList]);
+        $filterPostList = $this->postInterface->getPostsToDownload($request);
+        session(['filteredPostList' => $filterPostList]);
         return view('post.list',compact('postList'));
     }
 
-    public function downloadPostCSV()
+    public function downloadPostCSV(Request $request)
     {
-    
-    if(session('filteredPostList')) {
-        $postList =  session('filteredPostList');
-    } else {
-        $postList = Post::all();
+    try {
+        if(session('filteredPostList')) {
+            $postList =  session('filteredPostList');
+        } else {
+            $postList = $this->postInterface->getPostsToDownload($request);
+        }
+        $downloadFile = time() .'_posts.csv';
+        
+        return Excel::download(new PostsExport($postList), $downloadFile);
     }
-    return Excel::download(new PostsExport($postList), 'posts.csv');
+    catch (\Exception $e) {
+        Toastr::error('An error occurred while downloading the post');
+        return redirect()->route('postlist');
+    }
+
     }
 
     public function showPostUpload()
@@ -139,7 +158,7 @@ class PostController extends Controller
 
     public function submitPostUpload(PostCsvRequest $request)
     {
-    
+       
         $validator = Validator::make($request->all(),$request->rules());
         if ($validator->fails()) {
             return redirect()->route('postlist')
@@ -158,11 +177,11 @@ class PostController extends Controller
         try {
             $file = $request['csv_file'];
             Excel::import(new PostsImport,$file);
-            Toastr::error("Uploading successfully");
+            Toastr::success("Uploading successfully");
             return redirect()->route('postlist');
         } 
         catch (\Exception $e) {
-            Toastr::error('Uploading failed due to duplicate data');
+            Toastr::error('Uploading failed' . $e->getMessage());
             return view('post.upload');
         }
 

@@ -10,7 +10,9 @@ use App\Http\Requests\UserEditRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 class UserController extends Controller
 {
     private $userInterface;
@@ -32,8 +34,17 @@ class UserController extends Controller
 
     public function deleteUser(Request $request)
     {
-       $this->userInterface->deleteUser($request);
-       return redirect()->route('userlist'); 
+       try
+       {
+        $this->userInterface->deleteUser($request);
+        Toastr::success('User deleted successfully');
+        return redirect()->route('userlist'); 
+       }
+       catch (\Exception $e){
+        Toastr::error('An error occurred while deleting the user');
+        return redirect()->route('userlist');   
+       }
+
     }
 
     public function showProfile()
@@ -45,6 +56,9 @@ class UserController extends Controller
 
     public function showProfileEdit()
     {
+            if (Storage::disk('public')->exists('images/' . session('uploadProfile'))) {
+                Storage::disk('public')->delete('images/' . session('uploadProfile'));
+            }
         $id = Auth::user()->id;
         $user = User::find($id);
         return view('user.profile-edit',compact('user'));        
@@ -53,9 +67,15 @@ class UserController extends Controller
     public function submitProfileEdit(UserEditRequest $request)
     {
          $result = $request->validated();
-         $name = $request->file('profile')->getClientOriginalName();
-         $fileName =time(). Auth::user()->id . '.' . $request->file('profile')->getClientOriginalExtension();
-         $request->file('profile')->storeAs('public/images/',$fileName);
+         if ($request->hasFile('profile')) {
+            $name = $request->file('profile')->getClientOriginalName();
+            $fileName =time(). Auth::user()->id . '.' . $request->file('profile')->getClientOriginalExtension();
+            $request->file('profile')->storeAs('public/images/',$fileName);
+         }else {
+            $fileName = '';
+            $name = '';
+         }
+
          session(['ProfileName' => $name]);
          session(['uploadProfile' => $fileName]);
          return redirect()
@@ -72,13 +92,23 @@ class UserController extends Controller
 
     public function submitProfileEditConfirm(Request $request)
     {
+      if(session('ProfileName'))
+      {
         if (Storage::disk('public')->exists('images/' . $request['old_profile'])) {
-            print_r($request['old_profile']);
             Storage::disk('public')->delete('images/' . $request['old_profile']);
-    } 
+       }
+      }
+      try{
         $this->userInterface->updateUser($request);
+        Toastr::success('Profile updated successfully');
         return redirect()
-        ->route('userlist');
+        ->route('userprofile');
+      }
+      catch(\Exception $e){
+        Toastr::error('An error occurred while updating profile');
+        return redirect()
+        ->route('userprofile');    
+      }
     }
 
     public function searchUser(Request $request) 
@@ -114,8 +144,17 @@ class UserController extends Controller
 
     public function submitChangePassword(ChangePasswordRequest $request)
     {
-        $result = $request->validated();
-        $this->userInterface->changePassword($request);
-        return redirect()->route('userlist');
+        try{
+            $result = $request->validated();
+            $this->userInterface->changePassword($request);
+            Toastr::success('Password changed successfully');
+            return redirect()->route('changepassword');
+        }
+        catch(\Exception $e){
+            Toastr::error('An error occurred while changing password');
+            return redirect()->route('changepassword');    
+          }
     }
+
+
 }

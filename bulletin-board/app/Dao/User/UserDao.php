@@ -6,26 +6,27 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class UserDao implements UserDaoInterface
 {
    
     public function saveUser(Request $request)
     {
-        $profileName = session('uploadProfile');
+        $profileName = session('uploadProfile')??'';
         $user = new User();
         $user->name = $request['name'];
         $user->email = $request['email'];
         $user->password = Hash::make($request['password']);
         $user->profile = $profileName;
-        $user->type = $request['type'];
-        $user->phone = $request['phone'];
-        $user->dob = $request['dob'];
-        $user->address = $request['address'];
+        $user->type = $request['type']??'1';
+        $user->phone = $request['phone']?? null;
+        $user->dob = $request['dob']?? null;
+        $user->address = $request['address']??null;
         $user->created_user_id = Auth::user()->id ?? 1;
         $user->updated_user_id = Auth::user()->id ?? 1;
         $user->save();
-        session()->forget('uploadProfile');
+        Session::forget('uploadProfile');
         return $user;
     }
 
@@ -69,6 +70,7 @@ class UserDao implements UserDaoInterface
         $user->profile = session('uploadProfile');
         $user->updated_user_id = Auth::user()->id;
         $user->save();
+        Session::forget('uploadProfile');
         return $user;
     }
 

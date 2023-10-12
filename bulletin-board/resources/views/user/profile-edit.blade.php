@@ -101,7 +101,11 @@
                             <label for="address" class="col-md-4 col-form-label text-md-end">{{ __('Old Profile') }}</label>
                             
                             <div class="col-md-6">
-                            <img style="height: 200px; width: 200px;" src="{{ asset('storage/images/'. $user->profile) }}" />
+                            @if($user->profile)
+                            <img style="height: 150px; width: 150px;"  src="{{ asset('storage/images/'. $user->profile) }}" />
+                            @else
+                            <img style="height: 150px; width: 150px;"  src="{{ asset('storage/images/default-profile.jpg') }}" />
+                            @endif
                             <input type="hidden" name="old_profile" value="{{$user->profile}}"/>
                                 @error('address')
                                     <span class="invalid-feedback" role="alert">

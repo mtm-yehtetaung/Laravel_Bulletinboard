@@ -3,10 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Auth;
 
-class UserEditRequest extends FormRequest
+class SignupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,12 +25,9 @@ class UserEditRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore(Auth::user()->id)],
-            'profile' => ['image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
-            'type' => ['required'],
-            'phone' => ['max:20'],
-            'address' => ['max:255'],
-            'dob' => ['required']
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8'],
+            'password-confirm' => ['required','same:password'],
         ];
     }
 }

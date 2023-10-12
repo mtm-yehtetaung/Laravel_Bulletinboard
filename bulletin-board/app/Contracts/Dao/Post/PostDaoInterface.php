@@ -13,11 +13,11 @@ interface PostDaoInterface
 
     public function updatePostById(Request $request, $id);
 
-    public function deletePostById($id);
-
     public function searchPost(Request $request);
 
+    public function getPostsToDownload(Request $request);
 
+    public function deletePost(Request $request);
 }
 
 ?>

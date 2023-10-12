@@ -23,8 +23,8 @@ class CreateUsersTable extends Migration
             $table->char('phone', 20)->nullable();
             $table->string('address', 255)->nullable();
             $table->date('dob')->nullable();
-            $table->foreignId('created_user_id')->references('id')->on('users');
-            $table->foreignId('updated_user_id')->references('id')->on('users');
+            $table->foreignId('created_user_id');
+            $table->foreignId('updated_user_id');
             $table->foreignId('deleted_user_id')->nullable()->references('id')->on('users');
             $table->timestamps(0);
             $table->softDeletes('deleted_at', 0);

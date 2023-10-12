@@ -43,8 +43,14 @@
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('postlist') }}">{{ __('Post List') }}</a>
+                        </li>
                         <!-- Authentication Links -->
                         @guest
+                        <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('signup') }}">{{ __('Sign up') }}</a>
+                        </li>
                             @if (Route::has('login'))
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
@@ -55,11 +61,15 @@
                         <li class="nav-item">
                                     <a class="nav-link" href="{{ route('register') }}">{{ __('Create User') }}</a>
                         </li>
+                        <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('userlist') }}">{{ __('User List') }}</a>
+                        </li>
                         @endif
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
+                                {{ Auth::user()->name }}
                                 </a>
+                                
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
@@ -86,6 +96,7 @@
         <main class="py-4">
             @yield('content')
         </main>
+
     </div>
 </body>
 </html>

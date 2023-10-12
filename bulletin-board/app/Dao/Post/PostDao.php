@@ -37,6 +37,7 @@ class PostDao implements PostDaoInterface
                     });
             }
         })
+        ->whereNull('post.deleted_at')
         ->paginate(5);
       return $posts;
     }
@@ -61,8 +62,9 @@ class PostDao implements PostDaoInterface
         return $post;
     }
 
-    public function deletePostById($id) {
-        $post = Post::find($id);
+    public function deletePost(Request $request)
+    {
+        $post = Post::find($request['deleteId']);
         if ($post) {
           $post->deleted_user_id = Auth::user()->id;
           $post->save();
@@ -73,17 +75,59 @@ class PostDao implements PostDaoInterface
     public function searchPost(Request $request)
     {
         $keyword = $request['keyword'];
-        session(['last_search_keyword' => $keyword]);
-        $postList = DB::table('posts as post')
+        $posts = DB::table('posts as post')
         ->join('users as created_user', 'post.created_user_id', '=', 'created_user.id')
         ->join('users as updated_user', 'post.updated_user_id', '=', 'updated_user.id')
         ->select('post.*', 'created_user.name as created_user', 'updated_user.name as updated_user')
+        ->where(function ($query) use ($keyword) {
+            if (Auth::guest()) {
+                $query->whereNull('post.deleted_at')->where('post.status', 1);
+            } elseif (Auth::user()->type == '1') {
+                $id = Auth::user()->id;
+                $query->whereNull('post.deleted_at')
+                    ->where(function ($query) use ($id) {
+                        $query->where('post.created_user_id', $id)->orWhere('post.status', 1);
+                    });
+            }
+        })
+        ->where(function ($query) use ($keyword) {
+            if ($keyword) {
+                $query->where('post.title', 'like', "%$keyword%")
+                    ->orWhere('post.description', 'like', "%$keyword%");
+            }
+        })
         ->whereNull('post.deleted_at')
-        ->where('title', 'like', "%$keyword%")
-        ->orWhere('description', 'like', "%$keyword%")
         ->paginate(5);
-
-        return $postList;
+         return $posts;
+    }
+    
+    public function getPostsToDownload(Request $request)
+    {
+        $keyword = $request['keyword'];
+        $posts = DB::table('posts as post')
+        ->join('users as created_user', 'post.created_user_id', '=', 'created_user.id')
+        ->join('users as updated_user', 'post.updated_user_id', '=', 'updated_user.id')
+        ->select('post.*', 'created_user.name as created_user', 'updated_user.name as updated_user')
+        ->where(function ($query) {
+            if (Auth::guest()) {
+                $query->whereNull('post.deleted_at')->where('post.status', 1);
+            } elseif (Auth::user()->type == '1') {
+                $id = Auth::user()->id;
+                $query->whereNull('post.deleted_at')
+                    ->where(function ($query) use ($id) {
+                        $query->where('post.created_user_id', $id)->orWhere('post.status', 1);
+                    });
+            }
+        })
+        ->where(function ($query) use ($keyword) {
+            if ($keyword) {
+                $query->where('post.title', 'like', "%$keyword%")
+                    ->orWhere('post.description', 'like', "%$keyword%");
+            }
+        })
+        ->whereNull('post.deleted_at')
+        ->get();
+        return $posts;
     }
     
 }
