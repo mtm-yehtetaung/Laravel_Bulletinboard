@@ -9,9 +9,17 @@
 
                 <div class="card-body">
                     @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
+                    <script>
+                   function showToastrMessage(type, message) {
+                            toastr.options = {
+                                closeButton: true,
+                                progressBar: true,
+                                positionClass: 'toast-top-right'
+                            };
+                         toastr[type](message);
+                      }
+                  showToastrMessage('info', "{{ session('status') }}");
+                  </script>
                     @endif
 
                     <form method="POST" action="{{ route('password.email') }}">

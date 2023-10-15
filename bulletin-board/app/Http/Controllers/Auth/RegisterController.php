@@ -138,6 +138,8 @@ class RegisterController extends Controller
           
         } else {
             Toastr::error('Sign up failed');
+            return redirect()
+            ->route('postlist');
         }
        
     }

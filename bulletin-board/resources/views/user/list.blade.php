@@ -13,37 +13,40 @@
           <form method="GET" action="{{ route('usersearch') }}">
             @csrf
         <div class="row mb-2 search-bar d-flex justify-content-end">
-        <div class="col-auto">
+        <div class="col-md-auto col-sm-3 mt-2">
     <label for="searchKeyword" class="col-form-label" >Name:</label>
   </div>
-  <div class="col-auto">
+  <div class="col-md-auto col-sm-9 mt-2">
     <input type="text" id="searchKeyword" name="name" class="form-control" >
   </div>
-  <div class="col-auto">
+  <div class="col-md-auto col-sm-3 mt-2">
     <label for="searchKeyword" class="col-form-label" >Email:</label>
   </div>
-  <div class="col-auto">
+  <div class="col-md-auto col-sm-9 mt-2">
     <input type="text" id="searchKeyword" name="email" class="form-control" >
   </div>
-  <div class="col-auto">
+  <div class="col-md-auto col-sm-3 mt-2">
     <label for="searchKeyword" class="col-form-label" >From:</label>
   </div>
-  <div class="col-auto">
+  <div class="col-md-auto col-sm-9 mt-2">
     <input type="date" id="searchKeyword" name="from" class="form-control">
   </div>
-  <div class="col-auto">
+  <div class="col-md-auto col-sm-3 mt-2">
     <label for="searchKeyword" class="col-form-label" >to:</label>
   </div>
-  <div class="col-auto">
+  <div class="col-md-auto col-sm-9 mt-2">
     <input type="date" id="searchKeyword" name="to" class="form-control">
   </div>
   </form>
-        <div class="col-auto">
+        <div class="col-md-auto">
         <button class="btn btn-primary header-btn mt-sm-1"  id="searchButton">{{ __('Search') }}</button>
             </div>
           </div>
 
-        <table class="table table-hover table-bordered" id="post-list">
+        <div class="table-responsive">
+
+        
+        <table class="table table-hover table-bordered">
             <thead>
               <tr>
               <th class="header-cell" scope="col">No</th>
@@ -69,7 +72,7 @@
               <tr>
                 <td>{{$index + 1}}</td>
                 <td>
-                  <a class="user-name"  data-bs-toggle="modal" data-bs-target="#detailModal" onclick="showUserDetail({{json_encode($user)}})">{{$user->name}}</a>
+                  <a class="user-name" style="cursor:pointer;text-decoration:none;"  data-bs-toggle="modal" data-bs-target="#detailModal" onclick="showUserDetail({{json_encode($user)}})">{{$user->name}}</a>
                 <td>{{$user->email}}</td>
                 <td>{{$user->created_user}}</td>
                 @if($user->type == 0)
@@ -92,6 +95,7 @@
             @endif
             </tbody>
           </table>
+          </div>
           <div class="d-flex justify-content-end">
           {{ $userList->links() }}
           </div>
@@ -103,14 +107,14 @@
 
 <!-- Detail Modal -->
 <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-<div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 800px;">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title">{{ __('User Detail') }}</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body row" id="user-detail">
-                <div class="col-md-4">
+                <div class="col-md-4 ">
                 <img class="img-fluid" id="user-profile" style="height: 150px; width: 150px;"  src="" alt="user-profile"/>
                 </div>
                   <div class="col-md-8">

@@ -108,7 +108,11 @@
                             @if(session('uploadProfile'))
                                 <img style="height: 200px; width: 200px;" class="mt-2" src="{{ asset('storage/images/'. session('uploadProfile')) }}" />
                             @else
-                            <img style="height: 150px; width: 150px;"  src="{{ asset('storage/images/'. auth()->user()->profile) }}" />
+                               @if(auth()->user()->profile)
+                               <img style="height: 150px; width: 150px;"  src="{{ asset('storage/images/'. auth()->user()->profile) }}" />
+                               @else
+                               <img style="height: 150px; width: 150px;"  src="{{ asset('storage/images/default-profile.jpg') }}" />
+                               @endif
                             @endif
                             </div>
                         </div>

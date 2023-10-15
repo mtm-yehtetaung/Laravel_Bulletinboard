@@ -20,9 +20,8 @@ class PostsImport implements ToModel,WithHeadingRow
             'title'=>$row['title'],
             'description'=>$row['description'],
             'status'=>$row['status'],
-            'created_user_id'=>$row['created_user_id'],
-            'updated_user_id'=>$row['updated_user_id'],
-            'deleted_user_id'=>$row['deleted_user_id'],
+            'created_user_id'=>Auth::user()->id,
+            'updated_user_id'=>Auth::user()->id,
         ]);
     }
 }

@@ -132,6 +132,7 @@
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Edit') }}
                                 </button>
+                                
                                 <button type="reset" class="btn btn-secondary">
                                    {{ __('Clear') }}
                                 </button>

@@ -13,14 +13,14 @@
           <form method="GET" action="{{ route('postsearch') }}">
             @csrf
         <div class="row mb-2 search-bar d-flex justify-content-end">
-        <div class="col-auto">
+        <div class="col-md-auto">
     <label for="searchKeyword" class="col-form-label" >Keyword:</label>
   </div>
-  <div class="col-auto">
+  <div class="col-md-auto">
     <input type="text" id="searchKeyword" name="keyword" class="form-control" value="{{session('last_search_keyword') }}">
   </div>
   </form>
-        <div class="col-auto">
+        <div class="col-md-auto mt-xs-2">
         <button class="btn btn-primary header-btn mt-sm-1"  id="searchButton">{{ __('Search') }}</button>
         @if(auth()->user() && (auth()->user()->type == 0 || auth()->user()->type == 1))
             <a class="btn btn-primary header-btn mt-sm-1" href="/post/create">{{ __('Create') }}</a>
@@ -29,8 +29,9 @@
             <a class="btn btn-primary header-btn mt-sm-1" href="{{ route('postdownload') }}">{{ __('Download') }}</a>
             </div>
           </div>
-
-        <table class="table table-hover table-bordered" id="post-list">
+        
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered">
             <thead>
               <tr>
                 <th class="header-cell" scope="col">Post Title</th>
@@ -49,14 +50,14 @@
             @foreach ($postList as $post)          
               <tr>
                 <td>
-                  <a class="post-name"  data-bs-toggle="modal" data-bs-target="#detailModal" onclick="showPostDetail({{json_encode($post)}})">{{$post->title}}</a>
+                  <a class="post-name" style="cursor: pointer;text-decoration:none;"  data-bs-toggle="modal" data-bs-target="#detailModal" onclick="showPostDetail({{json_encode($post)}})">{{$post->title}}</a>
                 <td>{{$post->description}}</td>
                 <td>{{$post->created_user}}</td>
                 <td>{{date('Y/m/d', strtotime($post->created_at))}}</td>
                 @if(auth()->user() && (auth()->user()->type == 0 || auth()->user()->type == 1 && $post->created_user_id == auth()->user()->id))
-                <td>
+                <td class="d-sm-flex gap-2">
                   <a type="button" class="btn btn-primary btn-md" href="/post/edit/{{$post->id}}">Edit</a>
-                  <button type="button" class="btn btn-danger view-details" data-bs-toggle="modal" onclick="showDeleteDetail({{json_encode($post)}})" data-bs-target="#deleteModal">Delete</button>
+                  <button type="button" class="btn btn-danger btn-md" data-bs-toggle="modal" onclick="showDeleteDetail({{json_encode($post)}})" data-bs-target="#deleteModal">Delete</button>
                 </td>
                 @endif
               </tr>
@@ -64,6 +65,7 @@
             @endif
             </tbody>
           </table>
+          </div>
           <div class="d-flex justify-content-end">
           {{ $postList->links() }}
           </div>

@@ -170,8 +170,8 @@ class PostController extends Controller
         
                 // Calculate the column count (assuming the first row contains headers)
                 $columnCount = count($csv[0]);
-                if($columnCount < 10 || $columnCount > 10){
-                    Toastr::error('Column count of CSV must be 10');
+                if($columnCount < 3 || $columnCount > 3){
+                    Toastr::error('Column count of CSV must be 3');
                     return view('post.upload');
                 }
         try {
