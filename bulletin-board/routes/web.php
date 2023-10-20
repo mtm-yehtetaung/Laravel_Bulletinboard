@@ -33,12 +33,13 @@ Route::controller(RegisterController::class)->group(function () {
 
     Route::get('/user/signup', 'showSignup')->name('signup');
     Route::post('/user/signup', 'submitSignup')->name('signup');
-
+    
     Route::middleware(['admin'])->group(function () {
     Route::get('/user/register', 'showRegister')->name('register');
     Route::post('/user/register', 'submitRegister')->name('register');
     Route::get('/user/register/confirm', 'showRegisterConfirm')->name('registerconfirm');
     Route::post('/user/register/confirm', 'submitRegisterConfirm')->name('registerconfirm');
+   
 });
 });
 
@@ -60,7 +61,7 @@ Route::controller(UserController::class)->group(function () {
 
     Route::middleware(['admin'])->group(function () {
     Route::get('/user/list', 'index')->name('userlist');
-    Route::delete('/user/delete', 'deleteUser')->name('postdelete');
+    Route::delete('/user/delete', 'deleteUser')->name('userdelete');
     Route::get('user/search','searchUser')->name('usersearch');
 });
 });
@@ -87,7 +88,4 @@ Route::controller(PostController::class)->group(function () {
 });
 });
 
-// ---------------------------- posts ------------------------------//
-Route::controller(PostController::class)->group(function () {
-    
-});
+

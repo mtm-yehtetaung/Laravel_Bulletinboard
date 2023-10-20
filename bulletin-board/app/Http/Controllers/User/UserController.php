@@ -97,7 +97,10 @@ class UserController extends Controller
         if (Storage::disk('public')->exists('images/' . $request['old_profile'])) {
             Storage::disk('public')->delete('images/' . $request['old_profile']);
        }
+      }else {
+        session(['uploadProfile' => Auth::user()->profile]);
       }
+      
       try{
         $this->userInterface->updateUser($request);
         Toastr::success('Profile updated successfully');
@@ -134,7 +137,7 @@ class UserController extends Controller
             return $query->whereBetween('user.created_at', [$from, $to]);
         })
         ->paginate(5);
-        return view('user.list',compact('userList')); 
+        return view('user.list',compact('userList'));
     }
 
     public function showChangePassword()
@@ -152,7 +155,7 @@ class UserController extends Controller
         }
         catch(\Exception $e){
             Toastr::error('An error occurred while changing password');
-            return redirect()->route('changepassword');    
+            return redirect()->route('changepassword');
           }
     }
 
